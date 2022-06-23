@@ -1,0 +1,13 @@
+name = "ForwardNeuralNetworks"
+uuid = "41bbd1a4-0eca-4bcd-b6b1-8656d032eaeb"
+authors = ["ngiann <ngiann@gmail.com> and contributors"]
+version = "0.1.0"
+
+[compat]
+julia = "1"
+
+[extras]
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
+[targets]
+test = ["Test"]
