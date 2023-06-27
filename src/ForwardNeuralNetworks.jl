@@ -1,9 +1,12 @@
 module ForwardNeuralNetworks
 
-    import Base: Base.==
+    using Random
+    using LinearAlgebra
+    using Optim
 
     include("neuralnetwork.jl")
+    include("test.jl")
 
-    export layer, getparam, setparam!, setparam, ==, numweights
+    export numweights, test, makelayer
 
 end
