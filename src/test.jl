@@ -14,7 +14,7 @@ function test(N=30, seed = 1)
     function objective(w)
 
         local pred = net(w, x)
-@show "here"
+
         sum(abs2.(pred - y))
 
     end
