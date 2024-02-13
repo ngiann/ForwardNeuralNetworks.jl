@@ -9,7 +9,7 @@ mutable struct layer
 end
 
 
-function makelayer(;out=nou::Int64, in=nin::Int64, f = x -> tanh.(x) )
+function makelayer(;out=nou::Int64, in=nin::Int64, f = tanh )
     
     layer(in, out, f)
 
@@ -49,7 +49,7 @@ function (a::layer)(weights, x)
 
     @assert(MARK == length(weights))
 
-    a.f(w * x .+ b)
+    a.f.(w * x .+ b)
 
 end
 
