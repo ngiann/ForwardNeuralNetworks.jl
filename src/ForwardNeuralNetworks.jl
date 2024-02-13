@@ -2,11 +2,11 @@ module ForwardNeuralNetworks
 
     using Random
     using LinearAlgebra
-    using Optim
+    # using Optim
 
     include("neuralnetwork.jl")
-    include("test.jl")
+    # include("test.jl")
 
-    export numweights, test, makelayer
+    export numweights, makelayer
 
 end
