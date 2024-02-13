@@ -2,9 +2,9 @@
 # Constructor
 #########################################################
 
-mutable struct layer{F}
-    Din::Int64
-    Dout::Int64
+struct layer{F}
+    Din::Int64  # number of inputs to layer
+    Dout::Int64 # number of outputs of layer
     f::F
 end
 
@@ -49,7 +49,7 @@ function (a::layer)(weights, x)
 
     @assert(MARK == length(weights))
 
-    a.f.(w * x .+ b)
+    a.f.(w * x .+ b) # evaluation of layer
 
 end
 
@@ -63,6 +63,9 @@ function (a::Array{layer,1})(weights, x)
     out = x
 
     for l in a
+        
+        # the output of each layer is the input of the next layer
+        # the input to the first layer is x
         
         out = @views l(weights[MARK+1:MARK+numweights(l)], out)
         
