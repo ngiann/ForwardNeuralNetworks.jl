@@ -2,14 +2,14 @@
 # Constructor
 #########################################################
 
-mutable struct layer
+mutable struct layer{F}
     Din::Int64
     Dout::Int64
-    f::Function
+    f::F
 end
 
 
-function makelayer(;out=nou::Int64, in=nin::Int64, f = tanh )
+function makelayer(;out=nou::Int64, in=nin::Int64, f = tanh)
     
     layer(in, out, f)
 
@@ -58,18 +58,20 @@ end
 function (a::Array{layer,1})(weights, x)
 #----------------------------------------------------
 
-    MARK = numweights(a)
+    MARK = 0
 
-    out  = a[end](weights[MARK-numweights(a[end])+1:MARK], x)
+    out = x
 
-    MARK = MARK - numweights(a[end])
+    for l in a
+        
+        out = @views l(weights[MARK+1:MARK+numweights(l)], out)
+        
+        MARK += numweights(l)
 
-    for l in a[end-1:-1:1]
-        out = l(weights[MARK-numweights(l)+1:MARK], out)
-        MARK = MARK - numweights(l)
     end
 
-    @assert(MARK == 0)
+    @assert(MARK == numweights(a)) # make sure all weights have been used up
+
     return out
 
 end
