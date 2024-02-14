@@ -35,19 +35,15 @@ function (a::layer)(weights, x)
 
     MARK = 0
 
-    aux1 = @view weights[MARK+1:MARK +  a.Dout * a.Din]
-
-    w = reshape(aux1, a.Dout, a.Din)
+    w = reshape(weights[MARK+1:MARK +  a.Dout * a.Din], a.Dout, a.Din)
 
     MARK += a.Dout * a.Din
 
-    aux2 = @view weights[MARK+1:MARK + a.Dout]
-    
-    b = reshape(aux2, a.Dout)
+    b = weights[MARK+1:MARK + a.Dout]
 
     MARK += a.Dout
 
-    @assert(MARK == length(weights))
+    @assert(MARK == length(weights)) # make sure all weights have been used up
 
     a.f.(w * x .+ b) # evaluation of layer
 
