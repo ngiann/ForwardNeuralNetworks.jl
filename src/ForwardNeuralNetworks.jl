@@ -7,6 +7,7 @@ module ForwardNeuralNetworks
     include("neuralnetwork.jl")
     # include("test.jl")
 
-    export numweights, makelayer
+    # include("example.jl")
+    export numweights, makelayer, neuralnet
 
 end

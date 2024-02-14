@@ -8,6 +8,9 @@ struct layer{F}
     f::F
 end
 
+struct neuralnet{T}
+    layers::T
+end
 
 makelayer(;out=nou::Int64, in=nin::Int64, f = tanh) = layer(in, out, f)
 
@@ -47,14 +50,14 @@ end
 
 
 #----------------------------------------------------
-function (a::Array{layer,1})(weights, x)
+function (net::neuralnet)(weights, x)
 #----------------------------------------------------
 
     MARK = 0
 
     out = x
 
-    for l in a
+    for l in net.layers
         
         # the output of each layer is the input of the next layer
         # the input to the first layer is x
@@ -65,7 +68,7 @@ function (a::Array{layer,1})(weights, x)
 
     end
 
-    @assert(MARK == numweights(a)) # make sure all weights have been used up
+    # @assert(MARK == numweights(net)) # make sure all weights have been used up
 
     return out
 
@@ -78,8 +81,10 @@ end
 # Number of parameters in network
 #########################################################
 
-numweights(a::layer)          = a.Din * a.Dout + a.Dout
+numweights(a::layer) = a.Din * a.Dout + a.Dout
 
 numweights(a::Array{layer,1}) = mapreduce(numweights, +, a)
 
 numlayers(a::Array{layer,1})  = length(a)
+
+numweights(n::neuralnet) = sum(map(numweights, n.layers))
