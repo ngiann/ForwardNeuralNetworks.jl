@@ -9,11 +9,7 @@ struct layer{F}
 end
 
 
-function makelayer(;out=nou::Int64, in=nin::Int64, f = tanh)
-    
-    layer(in, out, f)
-
-end
+makelayer(;out=nou::Int64, in=nin::Int64, f = tanh) = layer(in, out, f)
 
 
 ##########################################################
@@ -63,7 +59,7 @@ function (a::Array{layer,1})(weights, x)
         # the output of each layer is the input of the next layer
         # the input to the first layer is x
         
-        out = @views l(weights[MARK+1:MARK+numweights(l)], out)
+        out = l(weights[MARK+1:MARK+numweights(l)], out)
         
         MARK += numweights(l)
 
