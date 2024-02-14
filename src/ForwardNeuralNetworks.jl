@@ -4,10 +4,10 @@ module ForwardNeuralNetworks
     using LinearAlgebra
     # using Optim
 
-    include("neuralnetwork.jl")
-    # include("test.jl")
+    # include("neuralnetwork.jl")
+    include("TwoLayerNetwork.jl") 
+    include("ThreeLayerNetwork.jl")  
 
-    # include("example.jl")
-    export numweights, makelayer, neuralnet
+    export numweights, TwoLayerNetwork, ThreeLayerNetwork
 
 end
