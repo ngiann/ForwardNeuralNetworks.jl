@@ -46,4 +46,4 @@ function (a::TwoLayerNetwork)(weights, x)
    
 end
 
-numweights(a::TwoLayerNetwork) = a.H * a.Din + a.H + a.H * a.Dout + a.Dout
+numweights(a::TwoLayerNetwork) = (a.H * a.Din + a.H) + (a.Dout * a.H + a.Dout)

@@ -55,4 +55,4 @@ function (a::ThreeLayerNetwork)(weights, x)
    
 end
 
-numweights(a::ThreeLayerNetwork) = a.H1 * a.Din + a.H1 + a.H1 * a.H2 + a.H2 +  a.H2 * a.Dout + a.Dout
+numweights(a::ThreeLayerNetwork) = (a.H1 * a.Din + a.H1) + (a.H1 * a.H2 + a.H2) + (a.H2 * a.Dout + a.Dout)
