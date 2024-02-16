@@ -22,27 +22,27 @@ function (a::ThreeLayerNetwork)(weights, x)
 
     MARK = 0
 
-    W1 = reshape(weights[MARK+1:MARK + a.H1 * a.Din], a.H1, a.Din)
+    W1 = @views reshape(weights[MARK+1:MARK + a.H1 * a.Din], a.H1, a.Din)
 
     MARK += a.H1 * a.Din
 
-    b1 = weights[MARK+1:MARK + a.H1]
+    b1 = @views weights[MARK+1:MARK + a.H1]
 
     MARK += a.H1
 
-    W2 = reshape(weights[MARK+1:MARK + a.H2 * a.H1], a.H2, a.H1)
+    W2 = @views reshape(weights[MARK+1:MARK + a.H2 * a.H1], a.H2, a.H1)
 
     MARK += a.H2 * a.H1
 
-    b2 = weights[MARK+1:MARK + a.H2]
+    b2 = @views weights[MARK+1:MARK + a.H2]
 
     MARK += a.H2
 
-    W3 = reshape(weights[MARK+1:MARK + a.Dout * a.H2], a.Dout, a.H2)
+    W3 = @views reshape(weights[MARK+1:MARK + a.Dout * a.H2], a.Dout, a.H2)
 
     MARK += a.Dout * a.H2
 
-    b3 = weights[MARK+1:MARK + a.Dout]
+    b3 = @views weights[MARK+1:MARK + a.Dout]
 
     MARK += a.Dout
 
