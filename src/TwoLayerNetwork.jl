@@ -21,19 +21,19 @@ function (a::TwoLayerNetwork)(weights, x)
 
     MARK = 0
 
-    W1 = reshape(weights[MARK+1:MARK + a.H * a.Din], a.H, a.Din)
+    W1 = @views reshape(weights[MARK+1:MARK + a.H * a.Din], a.H, a.Din)
 
     MARK += a.H * a.Din
 
-    b1 = weights[MARK+1:MARK + a.H]
+    b1 = @views weights[MARK+1:MARK + a.H]
 
     MARK += a.H
 
-    W2 = reshape(weights[MARK+1:MARK + a.Dout * a.H], a.Dout, a.H)
+    W2 = @views reshape(weights[MARK+1:MARK + a.Dout * a.H], a.Dout, a.H)
 
     MARK += a.Dout * a.H
 
-    b2 = weights[MARK+1:MARK + a.Dout]
+    b2 = @views weights[MARK+1:MARK + a.Dout]
 
     MARK += a.Dout
 
