@@ -5,10 +5,16 @@ module ForwardNeuralNetworks
     # using Optim
 
     # include("neuralnetwork.jl")
-    include("LinearNetwork.jl")
-    include("TwoLayerNetwork.jl") 
-    include("ThreeLayerNetwork.jl")  
+    # include("LinearNetwork.jl")
+    # include("TwoLayerNetwork.jl") 
+    # include("ThreeLayerNetwork.jl")  
 
-    export numweights, LinearNetwork, TwoLayerNetwork, ThreeLayerNetwork
+    include("newcode.jl")
+
+
+
+    export TwoLayerNetwork, ThreeLayerNetwork
+    export BufferedTwoLayerNetwork, BufferedThreeLayerNetwork
+    export forward!, numweights, inputdim, outputdim
 
 end
