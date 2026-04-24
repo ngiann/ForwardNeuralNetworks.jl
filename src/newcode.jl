@@ -37,7 +37,7 @@ struct TwoLayerNetwork{F} <: AbstractNeuralNetwork
     f::F
 end
 
-TwoLayerNetwork(; in::Integer, H::Integer, out::Integer, f=tanh) =
+TwoLayerNetwork(; in::Int, H::Int, out::Int, f=tanh) =
     TwoLayerNetwork(Int(in), Int(H), Int(out), f)
 
 inputdim(net::TwoLayerNetwork) = net.Din
@@ -60,7 +60,7 @@ struct ThreeLayerNetwork{F} <: AbstractNeuralNetwork
     f::F
 end
 
-ThreeLayerNetwork(; in::Integer, H1::Integer, H2::Integer, out::Integer, f=tanh) =
+ThreeLayerNetwork(; in::Int, H1::Int, H2::Int, out::Int, f=tanh) =
     ThreeLayerNetwork(Int(in), Int(H1), Int(H2), Int(out), f)
 
 inputdim(net::ThreeLayerNetwork) = net.Din
@@ -81,7 +81,7 @@ struct TwoLayerWorkspace{T}
     Ybuf::Matrix{T}   # Dout × N
 end
 
-function TwoLayerWorkspace(net::TwoLayerNetwork, N::Integer, ::Type{T}=Float64) where {T}
+function TwoLayerWorkspace(net::TwoLayerNetwork, N::Int, ::Type{T}=Float64) where {T}
     Nint = Int(N)
     TwoLayerWorkspace(
         Matrix{T}(undef, net.H, Nint),
@@ -95,7 +95,7 @@ struct ThreeLayerWorkspace{T}
     Ybuf::Matrix{T}   # Dout × N
 end
 
-function ThreeLayerWorkspace(net::ThreeLayerNetwork, N::Integer, ::Type{T}=Float64) where {T}
+function ThreeLayerWorkspace(net::ThreeLayerNetwork, N::Int, ::Type{T}=Float64) where {T}
     Nint = Int(N)
     ThreeLayerWorkspace(
         Matrix{T}(undef, net.H1, Nint),
@@ -114,15 +114,15 @@ struct BufferedTwoLayerNetwork{T,F} <: AbstractBufferedNeuralNetwork
     ws::TwoLayerWorkspace{T}
 end
 
-function BufferedTwoLayerNetwork(net::TwoLayerNetwork, N::Integer, ::Type{T}=Float64) where {T}
+function BufferedTwoLayerNetwork(net::TwoLayerNetwork, N::Int, ::Type{T}=Float64) where {T}
     BufferedTwoLayerNetwork{T, typeof(net.f)}(net, TwoLayerWorkspace(net, N, T))
 end
 
 function BufferedTwoLayerNetwork(;
-    in::Integer,
-    H::Integer,
-    out::Integer,
-    N::Integer,
+    in::Int,
+    H::Int,
+    out::Int,
+    N::Int,
     f=tanh,
     T::Type=Float64,
 )
@@ -139,16 +139,16 @@ struct BufferedThreeLayerNetwork{T,F} <: AbstractBufferedNeuralNetwork
     ws::ThreeLayerWorkspace{T}
 end
 
-function BufferedThreeLayerNetwork(net::ThreeLayerNetwork, N::Integer, ::Type{T}=Float64) where {T}
+function BufferedThreeLayerNetwork(net::ThreeLayerNetwork, N::Int, ::Type{T}=Float64) where {T}
     BufferedThreeLayerNetwork{T, typeof(net.f)}(net, ThreeLayerWorkspace(net, N, T))
 end
 
 function BufferedThreeLayerNetwork(;
-    in::Integer,
-    H1::Integer,
-    H2::Integer,
-    out::Integer,
-    N::Integer,
+    in::Int,
+    H1::Int,
+    H2::Int,
+    out::Int,
+    N::Int,
     f=tanh,
     T::Type=Float64,
 )
@@ -236,31 +236,21 @@ function forward!(
     W1, b1, W2, b2 = unpackweights(net, weights)
 
     mul!(Hbuf, W1, X)
-
-    @inbounds for j in 1:N
-        for i in 1:net.H
-            Hbuf[i, j] += b1[i]
-        end
-    end
-
-    @inbounds for j in 1:N
-        for i in 1:net.H
-            Hbuf[i, j] = net.f(Hbuf[i, j])
-        end
-    end
+    Hbuf .+= b1
+    Hbuf .= net.f.(Hbuf)
 
     mul!(Y, W2, Hbuf)
-
-    @inbounds for j in 1:N
-        for i in 1:outputdim(net)
-            Y[i, j] += b2[i]
-        end
-    end
+    Y .+= b2
 
     return Y
 end
 
-function forward!(ws::TwoLayerWorkspace, net::TwoLayerNetwork, weights::AbstractVector, X::AbstractMatrix)
+function forward!(
+    ws::TwoLayerWorkspace,
+    net::TwoLayerNetwork,
+    weights::AbstractVector,
+    X::AbstractMatrix,
+)
     forward!(ws.Ybuf, ws.Hbuf, net, weights, X)
 end
 
@@ -301,45 +291,25 @@ function forward!(
     W1, b1, W2, b2, W3, b3 = unpackweights(net, weights)
 
     mul!(H1buf, W1, X)
-
-    @inbounds for j in 1:N
-        for i in 1:net.H1
-            H1buf[i, j] += b1[i]
-        end
-    end
-
-    @inbounds for j in 1:N
-        for i in 1:net.H1
-            H1buf[i, j] = net.f(H1buf[i, j])
-        end
-    end
+    H1buf .+= b1
+    H1buf .= net.f.(H1buf)
 
     mul!(H2buf, W2, H1buf)
-
-    @inbounds for j in 1:N
-        for i in 1:net.H2
-            H2buf[i, j] += b2[i]
-        end
-    end
-
-    @inbounds for j in 1:N
-        for i in 1:net.H2
-            H2buf[i, j] = net.f(H2buf[i, j])
-        end
-    end
+    H2buf .+= b2
+    H2buf .= net.f.(H2buf)
 
     mul!(Y, W3, H2buf)
-
-    @inbounds for j in 1:N
-        for i in 1:outputdim(net)
-            Y[i, j] += b3[i]
-        end
-    end
+    Y .+= b3
 
     return Y
 end
 
-function forward!(ws::ThreeLayerWorkspace, net::ThreeLayerNetwork, weights::AbstractVector, X::AbstractMatrix)
+function forward!(
+    ws::ThreeLayerWorkspace,
+    net::ThreeLayerNetwork,
+    weights::AbstractVector,
+    X::AbstractMatrix,
+)
     forward!(ws.Ybuf, ws.H1buf, ws.H2buf, net, weights, X)
 end
 
@@ -377,10 +347,10 @@ end
 # Remake helpers
 # ============================================================
 
-function remake(net::BufferedTwoLayerNetwork, N::Integer, ::Type{T}=eltype(net.ws.Hbuf)) where {T}
+function remake(net::BufferedTwoLayerNetwork, N::Int, ::Type{T}=eltype(net.ws.Hbuf)) where {T}
     BufferedTwoLayerNetwork(net.net, N, T)
 end
 
-function remake(net::BufferedThreeLayerNetwork, N::Integer, ::Type{T}=eltype(net.ws.H1buf)) where {T}
+function remake(net::BufferedThreeLayerNetwork, N::Int, ::Type{T}=eltype(net.ws.H1buf)) where {T}
     BufferedThreeLayerNetwork(net.net, N, T)
 end

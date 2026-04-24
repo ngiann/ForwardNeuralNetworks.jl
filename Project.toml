@@ -1,6 +1,6 @@
 name = "ForwardNeuralNetworks"
 uuid = "41bbd1a4-0eca-4bcd-b6b1-8656d032eaeb"
-version = "0.2.0"
+version = "0.2.1"
 authors = ["ngiann <ngiann@gmail.com> and contributors"]
 
 [deps]
