@@ -170,16 +170,16 @@ function unpackweights(net::TwoLayerNetwork, weights::AbstractVector)
 
     mark = 0
 
-    W1 = @view reshape(weights[mark+1 : mark + net.H * net.Din], net.H, net.Din)
+    @views W1 = reshape(weights[mark+1 : mark + net.H * net.Din], net.H, net.Din)
     mark += net.H * net.Din
 
-    b1 = @view weights[mark+1 : mark + net.H]
+    @views b1 = weights[mark+1 : mark + net.H]
     mark += net.H
 
-    W2 = @view reshape(weights[mark+1 : mark + net.Dout * net.H], net.Dout, net.H)
+    @views W2 = reshape(weights[mark+1 : mark + net.Dout * net.H], net.Dout, net.H)
     mark += net.Dout * net.H
 
-    b2 = @view weights[mark+1 : mark + net.Dout]
+    @views b2 = weights[mark+1 : mark + net.Dout]
 
     return W1, b1, W2, b2
 end
@@ -190,22 +190,22 @@ function unpackweights(net::ThreeLayerNetwork, weights::AbstractVector)
 
     mark = 0
 
-    W1 = @view reshape(weights[mark+1 : mark + net.H1 * net.Din], net.H1, net.Din)
+    @views W1 =  reshape(weights[mark+1 : mark + net.H1 * net.Din], net.H1, net.Din)
     mark += net.H1 * net.Din
 
-    b1 = @view weights[mark+1 : mark + net.H1]
+    @views b1 = weights[mark+1 : mark + net.H1]
     mark += net.H1
 
-    W2 = @view reshape(weights[mark+1 : mark + net.H2 * net.H1], net.H2, net.H1)
+    @views W2 = reshape(weights[mark+1 : mark + net.H2 * net.H1], net.H2, net.H1)
     mark += net.H2 * net.H1
 
-    b2 = @view weights[mark+1 : mark + net.H2]
+    @views b2 = weights[mark+1 : mark + net.H2]
     mark += net.H2
 
-    W3 = @view reshape(weights[mark+1 : mark + net.Dout * net.H2], net.Dout, net.H2)
+    @views W3 = reshape(weights[mark+1 : mark + net.Dout * net.H2], net.Dout, net.H2)
     mark += net.Dout * net.H2
 
-    b3 = @view weights[mark+1 : mark + net.Dout]
+    @views b3 = weights[mark+1 : mark + net.Dout]
 
     return W1, b1, W2, b2, W3, b3
 end
@@ -373,14 +373,14 @@ function (net::ThreeLayerNetwork)(weights::AbstractVector, X::AbstractMatrix)
 end
 
 
-# # ============================================================
-# # Remake helpers
-# # ============================================================
+# ============================================================
+# Remake helpers
+# ============================================================
 
-# function remake(net::BufferedTwoLayerNetwork, N::Integer, ::Type{T}=eltype(net.ws.Hbuf)) where {T}
-#     BufferedTwoLayerNetwork(net.net, N, T)
-# end
+function remake(net::BufferedTwoLayerNetwork, N::Integer, ::Type{T}=eltype(net.ws.Hbuf)) where {T}
+    BufferedTwoLayerNetwork(net.net, N, T)
+end
 
-# function remake(net::BufferedThreeLayerNetwork, N::Integer, ::Type{T}=eltype(net.ws.H1buf)) where {T}
-#     BufferedThreeLayerNetwork(net.net, N, T)
-# end
+function remake(net::BufferedThreeLayerNetwork, N::Integer, ::Type{T}=eltype(net.ws.H1buf)) where {T}
+    BufferedThreeLayerNetwork(net.net, N, T)
+end
